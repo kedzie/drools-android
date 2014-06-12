@@ -1,0 +1,6 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Thu May 08 16:49:28 CDT 2014
+android-4.4.2_r3-sources.jar>=
+android-4.4.2_r3.pom>=
+android-4.4.2_r3-javadoc.jar>=
+android-4.4.2_r3.jar>=

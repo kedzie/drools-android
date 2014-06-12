@@ -16,45 +16,21 @@
 
 package org.drools.core.base;
 
+import org.drools.core.RuntimeDroolsException;
+import org.drools.core.base.ClassFieldAccessorCache.CacheEntry;
+import org.drools.core.base.extractors.*;
+import org.drools.core.common.InternalWorkingMemory;
+import org.drools.core.rule.builder.dialect.asm.ClassGenerator;
+import org.drools.core.util.ByteArrayClassLoader;
+import org.drools.core.util.asm.ClassFieldInspector;
+import org.mvel2.asm.*;
+
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Date;
 import java.util.Map;
-
-import org.drools.core.RuntimeDroolsException;
-import org.drools.core.base.ClassFieldAccessorCache.ByteArrayClassLoader;
-import org.drools.core.base.ClassFieldAccessorCache.CacheEntry;
-import org.drools.core.base.extractors.BaseBooleanClassFieldReader;
-import org.drools.core.base.extractors.BaseBooleanClassFieldWriter;
-import org.drools.core.base.extractors.BaseByteClassFieldReader;
-import org.drools.core.base.extractors.BaseByteClassFieldWriter;
-import org.drools.core.base.extractors.BaseCharClassFieldReader;
-import org.drools.core.base.extractors.BaseCharClassFieldWriter;
-import org.drools.core.base.extractors.BaseDateClassFieldReader;
-import org.drools.core.base.extractors.BaseDoubleClassFieldReader;
-import org.drools.core.base.extractors.BaseDoubleClassFieldWriter;
-import org.drools.core.base.extractors.BaseFloatClassFieldReader;
-import org.drools.core.base.extractors.BaseFloatClassFieldWriter;
-import org.drools.core.base.extractors.BaseIntClassFieldReader;
-import org.drools.core.base.extractors.BaseIntClassFieldWriter;
-import org.drools.core.base.extractors.BaseLongClassFieldReader;
-import org.drools.core.base.extractors.BaseLongClassFieldWriter;
-import org.drools.core.base.extractors.BaseNumberClassFieldReader;
-import org.drools.core.base.extractors.BaseObjectClassFieldReader;
-import org.drools.core.base.extractors.BaseObjectClassFieldWriter;
-import org.drools.core.base.extractors.BaseShortClassFieldReader;
-import org.drools.core.base.extractors.BaseShortClassFieldWriter;
-import org.drools.core.base.extractors.SelfReferenceClassFieldReader;
-import org.drools.core.common.InternalWorkingMemory;
-import org.drools.core.rule.builder.dialect.asm.ClassGenerator;
-import org.drools.core.util.asm.ClassFieldInspector;
-import org.mvel2.asm.ClassWriter;
-import org.mvel2.asm.Label;
-import org.mvel2.asm.MethodVisitor;
-import org.mvel2.asm.Opcodes;
-import org.mvel2.asm.Type;
 
 /**
  * This generates subclasses of BaseClassFieldExtractor to provide field extractors.
@@ -104,14 +80,14 @@ public class ClassFieldAccessorFactory {
             if ( SELF_REFERENCE_FIELD.equals( fieldName ) ) {
                 // then just create an instance of the special class field extractor
                 return new SelfReferenceClassFieldReader( clazz,
-                                                          fieldName );
+                        fieldName );
             } else {
                 // otherwise, bytecode generate a specific extractor
                 ClassFieldInspector inspector = inspectors.get( clazz );
                 if ( inspector == null ) {
                     inspector = new ClassFieldInspector( clazz );
                     inspectors.put( clazz,
-                                    inspector );
+                            inspector );
                 }
                 Class< ? > fieldType = (Class< ? >) inspector.getFieldTypes().get( fieldName );
                 Method getterMethod = (Method) inspector.getGetterMethods().get( fieldName );
@@ -131,16 +107,13 @@ public class ClassFieldAccessorFactory {
 
                     // generating byte array to create target class
                     final byte[] bytes = dumpReader( clazz,
-                                                     className,
-                                                     getterMethod,
-                                                     fieldType,
-                                                     clazz.isInterface() );
-                    // use bytes to get a class 
+                            className,
+                            getterMethod,
+                            fieldType,
+                            clazz.isInterface() );
 
-                    final Class< ? > newClass = byteArrayClassLoader.defineClass( className.replace( '/',
-                                                                                                     '.' ),
-                                                                                  bytes,
-                                                                                  PROTECTION_DOMAIN );
+                    final Class< ? > newClass = byteArrayClassLoader.defineClass(
+                          className.replace( '/', '.' ), bytes, PROTECTION_DOMAIN );
                     // instantiating target class
                     final ValueType valueType = ValueType.determineValueType( fieldType );
                     final Object[] params = {index, fieldType, valueType};
@@ -192,7 +165,9 @@ public class ClassFieldAccessorFactory {
                                                  fieldType,
                                                  clazz.isInterface() );
                 // use bytes to get a class 
-
+//                final Class< ? > newClass = DroolsAndroidContext.defineClass(className.replace( '/',
+//                                                                                                '.'),
+//                                                                            bytes);
                 final Class< ? > newClass = byteArrayClassLoader.defineClass( className.replace( '/',
                                                                                                  '.' ),
                                                                               bytes,

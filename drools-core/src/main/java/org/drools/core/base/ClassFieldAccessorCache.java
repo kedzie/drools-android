@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.drools.core.RuntimeDroolsException;
+import org.drools.core.util.ByteArrayClassLoader;
+import org.drools.core.util.ClassUtils;
 import org.drools.core.util.asm.ClassFieldInspector;
 
 public class ClassFieldAccessorCache {
@@ -153,7 +155,10 @@ public class ClassFieldAccessorCache {
             if ( parentClassLoader == null ) {
                 throw new RuntimeDroolsException( "ClassFieldAccessorFactory cannot have a null parent ClassLoader" );
             }
-            this.byteArrayClassLoader = new ByteArrayClassLoader( parentClassLoader );
+            this.byteArrayClassLoader = ClassUtils.isAndroid() ?
+                    (ByteArrayClassLoader) ClassUtils.instantiateObject(
+                            "org.drools.android.DexByteArrayClassLoader", null, parentClassLoader) :
+                    new DefaultByteArrayClassLoader( parentClassLoader );
         }
 
         public ByteArrayClassLoader getByteArrayClassLoader() {
@@ -222,20 +227,15 @@ public class ClassFieldAccessorCache {
 
     }
 
-    public static class ByteArrayClassLoader extends ClassLoader {
-        public ByteArrayClassLoader(final ClassLoader parent) {
+    public static class DefaultByteArrayClassLoader extends ClassLoader implements ByteArrayClassLoader {
+        public DefaultByteArrayClassLoader(final ClassLoader parent) {
             super( parent );
         }
 
         public Class< ? > defineClass(final String name,
                                       final byte[] bytes,
                                       final ProtectionDomain domain) {
-            return defineClass( name,
-                                bytes,
-                                0,
-                                bytes.length,
-                                domain );
+            return super.defineClass(name, bytes, 0, bytes.length, domain);
         }
     }
-
 }

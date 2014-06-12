@@ -1,5 +1,6 @@
 package org.drools.core.common;
 
+import org.drools.core.util.ClassUtils;
 import org.kie.internal.utils.ClassLoaderUtil;
 
 import java.io.ByteArrayInputStream;
@@ -85,7 +86,7 @@ public class ProjectClassLoader extends ClassLoader {
         }
     }
 
-    private Class<?> internalLoadClass(String name, boolean resolve) throws ClassNotFoundException {
+    Class<?> internalLoadClass(String name, boolean resolve) throws ClassNotFoundException {
         if (CACHE_NON_EXISTING_CLASSES && nonExistingClasses.contains(name)) {
             throw dummyCFNE;
         }
@@ -114,7 +115,7 @@ public class ProjectClassLoader extends ClassLoader {
         return tryDefineType(name, cnfe);
     }
 
-    private Class<?> tryDefineType(String name, ClassNotFoundException cnfe) throws ClassNotFoundException {
+    Class<?> tryDefineType(String name, ClassNotFoundException cnfe) throws ClassNotFoundException {
         byte[] bytecode = getBytecode(convertClassToResourcePath(name));
         if (bytecode == null) {
             if (CACHE_NON_EXISTING_CLASSES) {
@@ -136,7 +137,7 @@ public class ProjectClassLoader extends ClassLoader {
         }
 
         if (typesClassLoader == null) {
-            typesClassLoader = new InternalTypesClassLoader(this);
+            typesClassLoader = makeClassLoader();
         }
         Class<?> clazz = typesClassLoader.defineClass(name, bytecode);
         definedTypes.put(name, new ClassBytecode(clazz, bytecode));
@@ -211,11 +212,23 @@ public class ProjectClassLoader extends ClassLoader {
         nonExistingClasses.addAll(other.nonExistingClasses);
     }
 
-    private static class InternalTypesClassLoader extends ClassLoader {
+    private InternalTypesClassLoader makeClassLoader() {
+        return ClassUtils.isAndroid() ?
+                (InternalTypesClassLoader) ClassUtils.instantiateObject(
+                        "org.drools.core.common.DexInternalTypesClassLoader", null, this) :
+                new DefaultInternalTypesClassLoader( this );
+    }
+
+    interface InternalTypesClassLoader {
+        Class<?> defineClass(String name, byte[] bytecode);
+        Class<?> loadType(String name, boolean resolve) throws ClassNotFoundException;
+    }
+
+    private static class DefaultInternalTypesClassLoader extends ClassLoader implements InternalTypesClassLoader {
 
         private final ProjectClassLoader projectClassLoader;
 
-        private InternalTypesClassLoader(ProjectClassLoader projectClassLoader) {
+        private DefaultInternalTypesClassLoader(ProjectClassLoader projectClassLoader) {
             this.projectClassLoader = projectClassLoader;
         }
 
@@ -227,7 +240,7 @@ public class ProjectClassLoader extends ClassLoader {
                     definePackage( pkgName, "", "", "", "", "", "", null );
                 }
             }
-            return defineClass(name, bytecode, 0, bytecode.length);
+            return super.defineClass(name, bytecode, 0, bytecode.length);
         }
 
         protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -244,7 +257,7 @@ public class ProjectClassLoader extends ClassLoader {
             }
         }
 
-        private Class<?> loadType(String name, boolean resolve) throws ClassNotFoundException {
+        public Class<?> loadType(String name, boolean resolve) throws ClassNotFoundException {
             return super.loadClass(name, resolve);
         }
     }

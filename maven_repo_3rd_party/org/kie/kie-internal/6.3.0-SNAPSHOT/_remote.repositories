@@ -1,0 +1,7 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Feb 27 20:05:29 CST 2015
+kie-internal-6.3.0-SNAPSHOT-tests.jar>=
+kie-internal-6.3.0-SNAPSHOT.jar>=
+kie-internal-6.3.0-SNAPSHOT.pom>=
+kie-internal-6.3.0-SNAPSHOT-test-sources.jar>=
+kie-internal-6.3.0-SNAPSHOT-sources.jar>=

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Osmorc" name="OSGi">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="drools-android-6.0.1.Final.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="org.drools.android" bundleVersion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.2015-03-05T18:26:43Z" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+        <additionalProperties>
+          <property key="Bundle-Description" value="Drools Expert is the rule engine and Drools Fusion does complex event processing (CEP)." />
+          <property key="Bundle-Vendor" value="JBoss by Red Hat" />
+          <property key="Bundle-DocURL" value="http://www.jboss.org/" />
+          <property key="Export-Package" value="org.drools.android.*,org.drools.core.common.*" />
+          <property key="Import-Package" value="*,org.drools.core.*" />
+          <property key="-removeheaders" value="Ignore-Package" />
+          <property key="-nouses" value="true" />
+          <property key="-snapshot" value="2015-03-05T18:26:43Z" />
+          <property key="Scm-Revision" value="${buildNumber}" />
+          <property key="Build-Timestamp" value="${build.datetime}" />
+          <property key="Bundle-Name" value="Drools :: Android" />
+        </additionalProperties>
+        <additionalJARContents />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="drools-core" />
+    <orderEntry type="library" name="Maven: com.google.code:openbeans:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mvel:mvel2:2.1.8.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.kie:kie-api:6.0.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.kie:kie-internal:6.0.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: android:android:4.4.2_r3" level="project" />
+    <orderEntry type="library" name="Maven: com.android:dex:1.7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.harmony:beans-android:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.roboguice:roboguice:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.xml.parsers:jaxp-ri:1.4.5" level="project" />
+    <orderEntry type="library" name="Maven: javax.xml.parsers:jaxp-api:1.4.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.11" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.9.0" level="project" />
+  </component>
+</module>

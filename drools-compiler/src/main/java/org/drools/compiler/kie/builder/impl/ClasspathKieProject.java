@@ -170,7 +170,7 @@ public class ClasspathKieProject extends AbstractKieProject {
             rootPath = urlPathToAdd.substring( rootPath.lastIndexOf( ':' ) + 1 );
         }
 
-        if ( urlPathToAdd.endsWith( ".jar" ) || urlPathToAdd.endsWith( "/content" ) ) {
+        if ( urlPathToAdd.endsWith( ".apk" ) || urlPathToAdd.endsWith( ".jar" ) || urlPathToAdd.endsWith( "/content" ) ) {
             File actualZipFile = new File( rootPath );
             if ( !actualZipFile.exists() ) {
                 log.error( "Unable to load pom.properties from" + urlPathToAdd + " as jarPath cannot be found\n" + rootPath );

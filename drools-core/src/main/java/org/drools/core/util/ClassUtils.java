@@ -20,7 +20,6 @@ import org.drools.core.common.DroolsObjectInputStream;
 import org.drools.core.common.DroolsObjectOutputStream;
 import org.kie.api.definition.type.Modifies;
 import org.kie.internal.utils.ClassLoaderUtil;
-import org.kie.internal.utils.CompositeClassLoader;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -64,6 +63,8 @@ public final class ClassUtils {
     }
     
     private static Map<String, Class<?>> classes = Collections.synchronizedMap( new HashMap() );
+
+    private static Map<String, Constructor<?>> constructors = Collections.synchronizedMap( new HashMap() );
 
     private static final String STAR    = "*";
 
@@ -111,8 +112,8 @@ public final class ClassUtils {
                                    final File file) {
         final int rootLength = base.getAbsolutePath().length();
         final String absFileName = file.getAbsolutePath();
-        final int p = absFileName.lastIndexOf( '.' );
-        final String relFileName = absFileName.substring( rootLength + 1, p );
+        final int p = absFileName.lastIndexOf('.');
+        final String relFileName = absFileName.substring(rootLength + 1, p);
         return relFileName.replace(File.separatorChar, '.');
     }
 
@@ -120,7 +121,7 @@ public final class ClassUtils {
                                   final File file) {
         final int rootLength = base.getAbsolutePath().length();
         final String absFileName = file.getAbsolutePath();
-        return absFileName.substring( rootLength + 1 );
+        return absFileName.substring(rootLength + 1);
     }
 
     public static String canonicalName(Class clazz) {
@@ -140,19 +141,14 @@ public final class ClassUtils {
         return name.toString();
     }
 
-    public static Object instantiateObject(String className) {
-        return instantiateObject( className,
-                                  null );
-    }
-
     /**
-     * This method will attempt to create an instance of the specified Class. It uses
+     * This method will attempt to load the specified Class. It uses
      * a syncrhonized HashMap to cache the reflection Class lookup.
      * @param className
      * @return
      */
-    public static Object instantiateObject(String className,
-                                           ClassLoader classLoader) {
+    public static Class<?> loadClass(String className,
+                                     ClassLoader classLoader) {
         Class cls = (Class) classes.get( className );
         if ( cls == null ) {
             try {
@@ -200,15 +196,68 @@ public final class ClassUtils {
                 throw new RuntimeException( "Unable to load class '" + className + "'" );
             }
         }
+        return cls;
+    }
 
+    public static Object instantiateObject(String className) {
+        return instantiateObject(className,
+                (ClassLoader)null);
+    }
+
+    /**
+     * This method will attempt to create an instance of the specified Class. It uses
+     * a syncrhonized HashMap to cache the reflection Class lookup.
+     * @param className
+     * @return
+     */
+    public static Object instantiateObject(String className,
+                                           ClassLoader classLoader) {
         Object object;
         try {
-            object = cls.newInstance();
+            object = loadClass(className, classLoader).newInstance();
         } catch ( Throwable e ) {
             throw new RuntimeException( "Unable to instantiate object for class '" + className + "'",
                                         e );
         }
         return object;
+    }
+
+    /**
+     * This method will attempt to create an instance of the specified Class. It uses
+     * a synchronized HashMap to cache the reflection Class lookup.  It will execute the default
+     * constructor with the passed in arguments
+     * @param className
+     * @param args  arguments to default constructor
+     * @return
+     */
+    public static Object instantiateObject(String className,
+                                           ClassLoader classLoader, Object...args) {
+        Constructor c = (Constructor) constructors.get( className );
+        if ( c == null ) {
+            c = loadClass(className, classLoader).getConstructors()[0];
+            constructors.put(className, c);
+        }
+
+        Object object;
+        try {
+            object = c.newInstance(args);
+        } catch ( Throwable e ) {
+            throw new RuntimeException( "Unable to instantiate object for class '" + className +
+                    "' with constructor " + c, e );
+        }
+        return object;
+    }
+
+    /**
+     * This method will attempt to create an instance of the specified Class. It uses
+     * a synchronized HashMap to cache the reflection Class lookup.  It will execute the default
+     * constructor with the passed in arguments
+     * @param className
+     * @param args  arguments to default constructor
+     * @return
+     */
+    public static Object instantiateObject(String className, Object...args) {
+        return instantiateObject(className, null, args);
     }
 
     /**
@@ -531,6 +580,20 @@ public final class ClassUtils {
     public static boolean isOSX() {
         String os =  System.getProperty("os.name");
         return os.toUpperCase().contains( "MAC OS X" );
+    }
+
+    /**
+     * Checks if running on Android operating system
+     * @return
+     */
+    public static boolean isAndroid() {
+        try {
+            return loadClass("org.drools.android.DroolsAndroidContext", null)!=null &&
+                    loadClass("android.os.Build", null)!=null &&
+                    loadClass("dalvik.system.DexPathList", null) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     /**

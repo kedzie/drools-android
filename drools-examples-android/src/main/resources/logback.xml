@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="LOGCAT"
+              class="ch.qos.logback.classic.android.LogcatAppender" >
+        <checkLoggable>false</checkLoggable>
+        <encoder>
+            <pattern>%msg</pattern>
+        </encoder>
+    </appender>
+    <root level="DEBUG" >
+        <appender-ref ref="LOGCAT" />
+    </root>
+</configuration>

@@ -16,14 +16,14 @@ import java.io.File;
  */
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.3"})
-public class BuildMojoIT {
+public class BuildMojoIntegrationTest {
 
     @Rule
     public final TestResources resources = new TestResources();
 
     public final MavenRuntime mavenRuntime;
 
-    public BuildMojoIT(MavenRuntime.MavenRuntimeBuilder builder) throws Exception {
+    public BuildMojoIntegrationTest(MavenRuntime.MavenRuntimeBuilder builder) throws Exception {
         this.mavenRuntime = builder.withCliOptions( "-X" ).build();
     }
 

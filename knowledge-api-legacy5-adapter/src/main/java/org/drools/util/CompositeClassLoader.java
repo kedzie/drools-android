@@ -40,7 +40,7 @@ public class CompositeClassLoader extends ClassLoader {
     private final AtomicReference<Loader> loader       = new AtomicReference<Loader>();
 
     public CompositeClassLoader() {
-        super(  );
+        super( null );
         loader.set( new DefaultLoader() );
     }
     

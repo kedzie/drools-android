@@ -21,13 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-      * A custom ComponentConfigurator which adds the project's runtime classpath elements
-      * to the
-      *
-      * @author Brian Jackson
-      * @since Aug 1, 2008 3:04:17 PM
-      *
-      */
+ * A custom ComponentConfigurator which adds the project's runtime classpath elements
+ * to the
+ */
 @Component(role=ComponentConfigurator.class, hint="include-project-dependencies")
 public class IncludeProjectDependenciesComponentConfigurator extends AbstractComponentConfigurator {
 

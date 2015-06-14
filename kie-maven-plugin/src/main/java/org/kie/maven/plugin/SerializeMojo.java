@@ -20,8 +20,6 @@ import java.util.List;
 
 /**
  * Compiles and serializes knowledge packages.
- * @author kedzie
- *
  */
 @Mojo(name = "serialize",
       requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,

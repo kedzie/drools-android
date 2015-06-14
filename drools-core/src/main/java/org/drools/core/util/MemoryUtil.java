@@ -37,12 +37,10 @@ public class MemoryUtil {
         }
 
         public boolean isUsageThresholdExceeded(int threshold) {
-            if(!ClassUtils.isAndroid()) {
+            if (!ClassUtils.isAndroid()) {
                 MemoryUsage memoryUsage = getMemoryUsage();
                 return memoryUsage != null && memoryUsage.getUsed() * 100 / memoryUsage.getMax() >= threshold;
             } else {
-//                Runtime r = Runtime.getRuntime();
-//                return r.totalMemory()*100 / r.maxMemory() >= threshold;
                 return false;
             }
         }

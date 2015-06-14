@@ -144,7 +144,7 @@ public class ClassGenerator {
     private Class<?> generateClass() {
         if (clazz == null) {
             byte[] bytecode = generateBytecode();
-            if(ClassUtils.isAndroid()) {
+            if (ClassUtils.isAndroid()) {
                 ByteArrayClassLoader cl = (ByteArrayClassLoader)
                         ClassUtils.instantiateObject("org.drools.android.MultiDexClassLoader", null, classLoader);
                 clazz = cl.defineClass(className, bytecode, null);

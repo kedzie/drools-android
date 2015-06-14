@@ -675,12 +675,11 @@ public final class ClassUtils {
 
     /**
      * Checks if running on Android operating system
-     * @return
      */
     public static boolean isAndroid() {
         try {
-            return loadClass("org.drools.android.DroolsAndroidContext", null)!=null &&
-                    loadClass("android.os.Build", null)!=null &&
+            return loadClass("org.drools.android.DroolsAndroidContext", null) != null &&
+                    loadClass("android.os.Build", null) != null &&
                     loadClass("dalvik.system.DexPathList", null) != null;
         } catch (Exception e) {
             return false;

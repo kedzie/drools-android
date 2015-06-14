@@ -56,6 +56,8 @@ import static org.drools.core.util.StringUtils.ucFirst;
 public final class ClassUtils {
     private static final ProtectionDomain  PROTECTION_DOMAIN;
 
+    public static final boolean IS_ANDROID;
+
     static {
         PROTECTION_DOMAIN = (ProtectionDomain) AccessController.doPrivileged( new PrivilegedAction() {
 
@@ -63,6 +65,17 @@ public final class ClassUtils {
                 return ClassLoaderUtil.class.getProtectionDomain();
             }
         } );
+
+        // determine if we are running on Android
+        boolean isAndroid;
+        try {
+            isAndroid = loadClass("org.drools.android.DroolsAndroidContext", null) != null &&
+                    loadClass("android.os.Build", null) != null &&
+                    loadClass("dalvik.system.DexPathList", null) != null;
+        } catch (Exception e) {
+            isAndroid = false;
+        }
+        IS_ANDROID = isAndroid;
     }
     
     private static Map<String, Class<?>> classes = Collections.synchronizedMap( new HashMap() );
@@ -677,13 +690,7 @@ public final class ClassUtils {
      * Checks if running on Android operating system
      */
     public static boolean isAndroid() {
-        try {
-            return loadClass("org.drools.android.DroolsAndroidContext", null) != null &&
-                    loadClass("android.os.Build", null) != null &&
-                    loadClass("dalvik.system.DexPathList", null) != null;
-        } catch (Exception e) {
-            return false;
-        }
+        return IS_ANDROID;
     }
     
     /**
